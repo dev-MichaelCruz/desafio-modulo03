@@ -5,8 +5,7 @@ const rotas = express();
 const {
     listarCategorias,
 
-} = require('../controladores/transacoesControladores');
-
+} = require('./src/controladores/transacoesController.js');
 //rotas usuarios
 rotas.post('/usuario'); //cadastrarUsuario
 rotas.post('/login'); //login do usuario

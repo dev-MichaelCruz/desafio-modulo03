@@ -16,6 +16,8 @@ const listarTransacoes = async (req, res) => {
 
     try {
 
+    } catch {
+
     }
 }
 
