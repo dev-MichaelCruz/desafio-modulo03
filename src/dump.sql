@@ -1,4 +1,3 @@
-
 create database dindin;
 
 create table usuarios (
