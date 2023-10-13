@@ -26,14 +26,14 @@ const registrarUsuario = async (req, res) => {
 
         const usuario = {
             id: cadastrarUsuario.rows[0].id,
-            nome: cadastrarUsuario.rows[0].nome, 
+            nome: cadastrarUsuario.rows[0].nome,
             email: cadastrarUsuario.rows[0].email
         }
 
         res.status(201).json(usuario);
 
-    } catch (error){
-        res.status(500).json({mensagem:'Erro no servidor'});
+    } catch (error) {
+        res.status(500).json({ mensagem: 'Erro no servidor' });
     }
 
 };
