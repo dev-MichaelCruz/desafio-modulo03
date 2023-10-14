@@ -1,6 +1,5 @@
 const pool = require('../conexao.js');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 
 const registrarUsuario = async (req, res) => {
     try {
@@ -20,7 +19,7 @@ const registrarUsuario = async (req, res) => {
         }
 
         const cadastrarUsuario = await pool.query(
-            'INSERT INTO usuario (nome, email, senha) VALUE ($1, $2, $3) RETURNING id, nome, email',
+            'INSERT INTO usuarios (nome, email, senha) VALUES ($1, $2, $3) RETURNING id, nome, email',
             [nome, email, crypSenha]
         );
 
@@ -37,3 +36,7 @@ const registrarUsuario = async (req, res) => {
     }
 
 };
+
+module.exports = {
+    registrarUsuario
+}
