@@ -1,14 +1,16 @@
 const pool = require('../conexao.js');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+
 
 const registrarUsuario = async (req, res) => {
+    const { nome, email, senha } = req.body;
     try {
-        const { nome, email, senha } = req.body;
+
         const usuarioEncontrado = await pool.query(
             'SELECT * FROM usuarios WHERE email = $1',
             [email]
         );
+
         const crypSenha = await bcrypt.hash(senha, 10);
 
         if (!nome || !email || !senha) {
@@ -20,20 +22,18 @@ const registrarUsuario = async (req, res) => {
         }
 
         const cadastrarUsuario = await pool.query(
-            'INSERT INTO usuario (nome, email, senha) VALUE ($1, $2, $3) RETURNING id, nome, email',
+            'INSERT INTO usuarios (nome, email, senha) VALUES ($1, $2, $3) RETURNING id, nome, email, senha',
             [nome, email, crypSenha]
         );
 
-        const usuario = {
-            id: cadastrarUsuario.rows[0].id,
-            nome: cadastrarUsuario.rows[0].nome,
-            email: cadastrarUsuario.rows[0].email
-        }
-
-        res.status(201).json(usuario);
+        return res.status(201).json(cadastrarUsuario.rows[0]);
 
     } catch (error) {
-        res.status(500).json({ mensagem: 'Erro no servidor' });
+        console.error(error);
+        return res.status(500).json({ mensagem: 'Erro no servidor' });
     }
+}
 
-};
+module.exports = {
+    registrarUsuario
+}

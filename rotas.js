@@ -6,9 +6,14 @@ const {
     listarCategorias,
 
 } = require('./src/controladores/transacoesController.js');
+
+const { registrarUsuario } = require('./src/controladores/usuariosController.js');
+const { authentication, validaToken } = require('./src/middlewares/authentication.js');
+
+
 //rotas usuarios
-rotas.post('/usuario'); //cadastrarUsuario
-rotas.post('/login'); //login do usuario
+rotas.post('/usuario', registrarUsuario); //cadastrarUsuario
+rotas.post('/login', authentication, validaToken); //login do usuario
 rotas.get('/usuario'); //detalhar usuario
 rotas.put('/usuario'); //atualizar usuario
 
