@@ -2,20 +2,21 @@ const express = require('express');
 
 const rotas = express();
 
-const {
-    listarCategorias,
+const { listarCategorias } = require('./src/controladores/transacoesController.js');
 
-} = require('./src/controladores/transacoesController.js');
-
-const { registrarUsuario } = require('./src/controladores/usuariosController.js');
+const { registrarUsuario, getUsuario, atualizarUsuario } = require('./src/controladores/usuariosController.js');
 const { authentication, validaToken } = require('./src/middlewares/authentication.js');
+const { validaCampoCadastro, validaCampoLogin } = require('./src/middlewares/validation.js');
 
 
 //rotas usuarios
-rotas.post('/usuario', registrarUsuario); //cadastrarUsuario
-rotas.post('/login', authentication, validaToken); //login do usuario
-rotas.get('/usuario'); //detalhar usuario
-rotas.put('/usuario'); //atualizar usuario
+rotas.post('/usuario', validaCampoCadastro, registrarUsuario); //cadastrarUsuario
+rotas.post('/login', validaCampoLogin, authentication); //login do usuario
+
+rotas.use(validaToken); //Os endpoints abaixo só podem funcionar se for valido o token. 
+
+rotas.get('/usuario', getUsuario); //detalhar usuario
+rotas.put('/usuario', atualizarUsuario); //atualizar usuario
 
 //rotas transacoes
 rotas.get('/categorias', listarCategorias); //listar categorias
