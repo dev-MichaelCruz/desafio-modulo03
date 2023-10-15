@@ -12,11 +12,11 @@ const listarCategorias = async (req, res) => {
 
 const cadastrarTransacao = async (req, res) => {
     const { descricao, valor, data, categoria_id, tipo } = req.body;
-    const { id: usuario_id } = req.usuario;
+    const { usuario_id } = req.usuario;
 
     try {
         const { rows } = await pool.query(
-            `insert into transacoes (descricao, valor, data, categoria_id, usuario_id, tipo) values
+            `INSERT into transacoes (descricao, valor, data, categoria_id, usuario_id, tipo) values
             ($1, $2, $3, $4, $5, $6) returning *`,
             [descricao, valor, data, categoria_id, usuario_id, tipo]
         );

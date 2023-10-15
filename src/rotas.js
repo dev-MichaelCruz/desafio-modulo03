@@ -20,7 +20,7 @@ rotas.put('/usuario'); //atualizar usuario
 rotas.get('/categorias', listarCategorias); //OK
 rotas.get('/transacao', listarTransacoes); //OK
 rotas.get('/transacao/:id', detalharTransacao); //detalhar uma transacao do usuario logado
-rotas.post('transacao', cadastrarTransacao); //cadastrar transacao para o usuario logado
+rotas.post('/transacao', cadastrarTransacao); //cadastrar transacao para o usuario logado
 rotas.put('/transacao/:id', atualizarTransacao); //atualizar transacao do usuario logado
 rotas.delete('transacao/:id', excluirTransacao); //excluir transacao do usuario logado
 rotas.get('/transacao/extrato', extratoTransacoes); //obter extrato das transações
