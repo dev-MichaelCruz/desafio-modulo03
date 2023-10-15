@@ -12,25 +12,17 @@ const listarCategorias = async (req, res) => {
 
 const cadastrarTransacao = async (req, res) => {
     const { descricao, valor, data, categoria_id, tipo } = req.body;
-    const { usuario_id } = req.usuario;
-
+    const { id: usuario_id } = req.usuario;
+    console.log("testetetetete", req.usuario);
     try {
-        const { rows } = await pool.query(
-            `INSERT into transacoes (descricao, valor, data, categoria_id, usuario_id, tipo) values
-            ($1, $2, $3, $4, $5, $6) returning *`,
-            [descricao, valor, data, categoria_id, usuario_id, tipo]
+        const { rows } = await pool.query(`INSERT INTO transacoes (tipo, descricao, valor, data, usuario_id, categoria_id  ) VALUES
+            ($1, $2, $3, $4, $5, $6) returning *`, [tipo, descricao, valor, data, usuario_id, categoria_id]
         );
 
-        const categorias = await pool.query(
-            `select descricao from categorias where id = $1`,
-            [categoria_id]
-        );
+        const categorias = await pool.query(`SELECT descricao FROM categorias WHERE id = $1`, [categoria_id]);
 
-        const transacao = {
-            ...rows[0],
-            categoria_nome: categorias.rows[0].descricao
-        };
-
+        const transacao = { ...rows[0], categoria_nome: categorias.rows[0].descricao };
+        console.log("QUALQUER MENSAGEM AE", transacao);
         return res.status(201).json(transacao);
     } catch (error) {
         console.log(error.message);
@@ -49,10 +41,7 @@ const listarTransacoes = async (req, res) => {
             for (let i = 0; i < Array(filtro).length; i++) {
                 const element = Array(filtro)[i];
 
-                const { rows } = await pool.query(
-                    `select id from categorias where descricao ilike $1`,
-                    [element]
-                );
+                const { rows } = await pool.query(`SELECT id FROM categorias WHERE descricao ILIKE $1`, [element]);
                 categorias.push(rows[0].id);
             }
 
@@ -61,10 +50,7 @@ const listarTransacoes = async (req, res) => {
             for (let i = 0; i < categorias.length; i++) {
                 const categoria_id = categorias[i];
 
-                const { rows, rowCount } = await pool.query(
-                    `select * from transacoes where usuario_id = $1 and categoria_id = $2`,
-                    [usuario_id, categoria_id]
-                );
+                const { rows, rowCount } = await pool.query(`SELECT * FROM transacoes WHERE usuario_id = $1 AND categoria_id = $2`, [usuario_id, categoria_id]);
 
                 if (rowCount > 0) {
                     transacoes.push(rows[0]);
@@ -73,10 +59,7 @@ const listarTransacoes = async (req, res) => {
             return res.status(200).json(transacoes);
         }
 
-        const { rows, rowCount } = await pool.query(
-            `select * from transacoes where usuario_id = $1`,
-            [usuario_id]
-        );
+        const { rows, rowCount } = await pool.query(`SELECT * FROM transacoes WHERE usuario_id = $1`, [usuario_id]);
 
         if (rowCount < 1) {
             return res.status(200).json([])
@@ -94,10 +77,7 @@ const detalharTransacao = async (req, res) => {
     const { id } = req.usuario;
 
     try {
-        const { rowCount, rows } = await pool.query(
-            `select * from transacoes where id = $1`,
-            [transacao_id]
-        );
+        const { rowCount, rows } = await pool.query(`SELECT * FROM transacoes WHERE id = $1`, [transacao_id]);
 
         if (rowCount < 1) {
             return res.status(404).json({ mensagem: "Transação não encontrada." });
@@ -107,15 +87,9 @@ const detalharTransacao = async (req, res) => {
             return res.status(401).json({ mensagem: "Transação não pertence ao usuário logado." })
         }
 
-        const categorias = await pool.query(
-            `select descricao from categorias where id = $1`,
-            [rows[0].categoria_id]
-        );
+        const categorias = await pool.query(`SELECT descricao FROM categorias WHERE id = $1`, [rows[0].categoria_id]);
 
-        const transacao = {
-            ...rows[0],
-            categoria_nome: categorias.rows[0].descricao
-        };
+        const transacao = { ...rows[0], categoria_nome: categorias.rows[0].descricao };
 
         return res.status(200).json(transacao);
     } catch (error) {
@@ -130,10 +104,7 @@ const atualizarTransacao = async (req, res) => {
     const { id: usuarioId } = req.usuario;
 
     try {
-        const { rowCount, rows } = await pool.query(
-            `select usuario_id from transacoes where id = $1`,
-            [transacao_id]
-        );
+        const { rowCount, rows } = await pool.query(`SELECT usuario_id FROM transacoes WHERE id = $1`, [transacao_id]);
 
         if (rowCount < 1) {
             return res.status(404).json({ mensagem: "Transação não encontrada." });
@@ -143,12 +114,8 @@ const atualizarTransacao = async (req, res) => {
             return res.status(401).json({ mensagem: "Transação não pertence ao usuário logado." })
         }
 
-        await pool.query(
-            `update transacoes set descricao = $1, 
-            valor = $2, data = $3, categoria_id = $4, 
-            tipo = $5 where id = $6`,
-            [descricao, valor, data, categoria_id, tipo, transacao_id]
-        );
+        await pool.query(`UPDATE transacoes SET descricao = $1, valor = $2, data = $3, categoria_id = $4, tipo = $5 WHERE id = $6`,
+            [descricao, valor, data, categoria_id, tipo, transacao_id]);
 
         return res.status(204).json();
     } catch (error) {
@@ -162,10 +129,7 @@ const excluirTransacao = async (req, res) => {
     const { id: usuarioId } = req.usuario;
 
     try {
-        const { rowCount, rows } = await pool.query(
-            `select usuario_id from transacoes where id = $1`,
-            [transacao_id]
-        );
+        const { rowCount, rows } = await pool.query(`SELCT usuario_id FROM transacoes WHERE id = $1`, [transacao_id]);
 
         if (rowCount < 1) {
             return res.status(404).json({ mensagem: "Transação não encontrada." });
@@ -175,10 +139,7 @@ const excluirTransacao = async (req, res) => {
             return res.status(401).json({ mensagem: "Transação não pertence ao usuário logado." })
         }
 
-        await pool.query(
-            `delete from transacoes where id = $1`,
-            [transacao_id]
-        );
+        await pool.query(`DELETE FROM transacoes WHERE id = $1`, [transacao_id]);
 
         return res.status(204).json();
     } catch (error) {
@@ -188,19 +149,13 @@ const excluirTransacao = async (req, res) => {
 }
 
 const extratoTransacoes = async (req, res) => {
-    const { id: usuarioId } = req.usuario;
+    const { id: usuario_id } = req.usuario;
 
     try {
-        const { rows, rowCount } = await pool.query(
-            `select valor, tipo from transacoes where usuario_id = $1`,
-            [usuarioId]
-        );
+        const { rows, rowCount } = await pool.query(`SELECT valor, tipo FROM transacoes WHERE usuario_id = $1`, [usuario_id]);
 
         if (rowCount < 1) {
-            let extrato = {
-                entrada: 0,
-                saida: 0
-            };
+            let extrato = { entrada: 0, saida: 0 };
             return res.status(200).json(extrato);
         }
 
@@ -223,27 +178,19 @@ const extratoTransacoes = async (req, res) => {
         const somaSaida = saidas.reduce((acumulador, valorAtual) => acumulador + valorAtual, valorInicial);
 
         if (filtrarEntrada.length === 0) {
-            let extrato = {
-                entrada: 0,
-                saida: somaSaida
-            };
+            let extrato = { entrada: 0, saida: somaSaida };
             return res.status(200).json(extrato);
         }
 
         if (filtrarSaida.length === 0) {
-            let extrato = {
-                entrada: somaEntrada,
-                saida: 0
-            };
+            let extrato = { entrada: somaEntrada, saida: 0 };
             return res.status(200).json(extrato);
         }
 
-        let extrato = {
-            entrada: somaEntrada,
-            saida: somaSaida
-        }
+        let extrato = { entrada: somaEntrada, saida: somaSaida }
 
         return res.status(200).json(extrato);
+
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({ mensagem: "Erro interno no servidor" });

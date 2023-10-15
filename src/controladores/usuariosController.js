@@ -28,12 +28,13 @@ module.exports = {
             return res.status(500).json({ mensagem: 'Erro interno do servidor' });
         }
     },
-    
+
     async getUsuario(req, res) {
         //console.log('req usuario ', req.usuario);
         try {
             return res.json(req.usuario);
         } catch (error) {
+            console.error("Simulando erro", error)
             return res.status(500).json({ mensagem: 'Erro interno do servidor' });
         }
     },

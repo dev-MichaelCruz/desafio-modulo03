@@ -2,9 +2,11 @@ const express = require('express');
 
 const rotas = express();
 
-const { listarCategorias } = require('./src/controladores/transacoesController.js');
+const { listarCategorias, listarTransacoes, detalharTransacao, cadastrarTransacao, atualizarTransacao, excluirTransacao, extratoTransacoes
+} = require('./src/controladores/transacoesController.js');
 
 const { registrarUsuario, getUsuario, atualizarUsuario } = require('./src/controladores/usuariosController.js');
+
 const { authentication, validaToken } = require('./src/middlewares/authentication.js');
 const { validaCampoCadastro, validaCampoLogin } = require('./src/middlewares/validation.js');
 
@@ -19,12 +21,12 @@ rotas.get('/usuario', getUsuario); //detalhar usuario
 rotas.put('/usuario', atualizarUsuario); //atualizar usuario
 
 //rotas transacoes
-rotas.get('/categorias', listarCategorias); //listar categorias
-rotas.get('/transacao'); //listar transacoes do usuario
-rotas.get('/transacao/:id'); //detalhar uma transacao do usuario logado
-rotas.post('transacao'); //cadastrar transacao para o usuario logado
-rotas.put('/transacao/:id'); //atualizar transacao do usuario logado
-rotas.delete('transacao/:id'); //excluir transacao do usuario logado
-rotas.get('/transacao/extrato'); //obter extrato das transações
+rotas.get('/categoria', listarCategorias); //listar categorias
+rotas.get('/transacao', listarTransacoes); //listar transacoes do usuario
+rotas.get('/transacao/extrato', extratoTransacoes); //obter extrato das transações
+rotas.get('/transacao/:id', detalharTransacao); //detalhar uma transacao do usuario logado
+rotas.post('/transacao', cadastrarTransacao); //cadastrar transacao para o usuario logado
+rotas.put('/transacao/:id', atualizarTransacao); //atualizar transacao do usuario logado
+rotas.delete('/transacao/:id', excluirTransacao); //excluir transacao do usuario logado
 
 module.exports = rotas;
